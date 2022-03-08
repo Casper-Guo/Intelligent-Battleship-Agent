@@ -303,7 +303,6 @@ def play_game(player_board, ai_board):
     elif ai_board.check_game_end(suppressed=False):
         print("Impossible, you have defeated the AI overlord in {num} moves!".format(num=player_move_counter))
 
-
     print(best_probas)
 
     return None

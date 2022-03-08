@@ -14,7 +14,7 @@ Y = df_sample["occupied?"]
 
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size=0.7)
 
-clf = RF(max_depth=10, n_estimators=60, n_jobs=-1, random_state=42)
+clf = RF(max_depth=15, n_estimators=20, n_jobs=-1, random_state=42)
 clf.fit(X_train, Y_train)
 
 import pickle
