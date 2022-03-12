@@ -8,8 +8,7 @@ import pandas as pd
 
 def random_moves(Board, num_moves):
 
-    # requesting more moves than the board can accommodate
-    # will result in infinite loop!
+    # REQUIRES: num_moves < 100
 
     num_moved = 0
 
@@ -23,8 +22,12 @@ def random_moves(Board, num_moves):
             Board.play_move(row, col)
             num_moved += 1
 
+    return
+
 
 def partition_move():
+    # break up 100 into intervals with length (1,10)
+
     num_moves = []
     while sum(num_moves) < 100:
         num_moves.append(random.randint(1, 10))
@@ -38,6 +41,8 @@ def check_inbound(row,col):
 
 
 def collect_board_data(Board):
+    # Count how many occupied grids are not hit yet
+
     occupied_remain = 17
     total_remain = 100
 
@@ -51,27 +56,42 @@ def collect_board_data(Board):
     return round(occupied_remain/total_remain, 3)
 
 
+def distance_to_center(row, col):
+    # calculates a grid's distance to the center of the board
+    # defined as the Euclidean distance from the grid to the nearest one of the four central grids
+
+    dist_center = 0
+
+    if row <= 4:
+        dist_center += (4-row)**2
+    else:
+        dist_center += (5-row)**2
+
+    if col <= 4:
+        dist_center += (4-col)**2
+    else:
+        dist_center += (5-col)**2
+
+    return round(dist_center**0.5, 3)
+
+
 def collect_grid_data(Board, row, col):
+    # adj_miss = adjacent grids confirmed hit / total # of adjacent grids
+    # adj_hit = adjacent grids confirmed miss / total # of adjacent grids
+    # diag_hit and diag_miss defined similarly
+
+    # only record data that would be available to a hypothetical player
+
     del_rows = [0, 1, -1]
     del_cols = [0, 1, -1]
 
-    dist_center = 0
+    dist_center = distance_to_center(row, col)
     adj_count = 0
     adj_hit = 0
     adj_miss = 0
     diag_count = 0
     diag_hit = 0
     diag_miss = 0
-
-    if row <= 4:
-        dist_center += (4-row)**2
-    else:
-        dist_center += (5-row)**2
-    if col <= 4:
-        dist_center += (4-col)**2
-    else:
-        dist_center += (5-col)**2
-    dist_center = round(dist_center**0.5, 3)
 
     for del_row in del_rows:
         for del_col in del_cols:
@@ -99,8 +119,6 @@ def collect_grid_data(Board, row, col):
     adj_miss = round(adj_miss/adj_count, 2)
     diag_hit = round(diag_hit/diag_count, 2)
     diag_miss = round(diag_miss/diag_count, 2)
-
-    # occupied = int(Board.board[row][col].occupied)
 
     return dist_center, adj_hit, adj_miss, diag_hit, diag_miss
 
