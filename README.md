@@ -1,8 +1,14 @@
 # Intelligent Battleship Agent
 
-An interface for playing the board game Battleship against another player or a random forest classifier.
+This project includes an interface to play against an agent in the board game Battleship. It was implemented for learning machine learing in summer 2021.
 
-The agent is trained by playing on randomly generated boards. It exhibits the following characteristics:
+The agent:
+
+- Uses a random forest classifier to predict hit probability
+- Uses simple heuristics to balance exploration vs exploitation
+- Is trained by playing on randomly generated boards
+
+It exhibits the following characteristics:
 
 1, It correctly recognizes that a grid is more likely to contain a target if a directly (non-diagonal) adjacent grid also contains a target. It thus has the human-like behavior of valuing grids around an already hit grid more highly.
 
