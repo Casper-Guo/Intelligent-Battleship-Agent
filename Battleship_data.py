@@ -1,9 +1,7 @@
 
-# Data Collection Implementation
+"""Data Collection Implementation"""
 
-from Battleship import *
 import random
-import pandas as pd
 
 
 def random_moves(Board, num_moves):
@@ -13,7 +11,7 @@ def random_moves(Board, num_moves):
     num_moved = 0
 
     while num_moved < num_moves:
-        index = random.randint(0,99)
+        index = random.randint(0, 99)
         row = index // 10
         col = index % 10
         if Board.board[row][col].hit:
@@ -36,7 +34,7 @@ def partition_move():
     return num_moves
 
 
-def check_inbound(row,col):
+def check_inbound(row, col):
     return 0 <= row < 10 and 0 <= col < 10
 
 

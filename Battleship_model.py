@@ -1,10 +1,8 @@
 
-import numpy as np
 import pickle
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier as RF
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
-from sklearn.metrics import confusion_matrix, precision_score, recall_score
+from sklearn.model_selection import train_test_split, GridSearchCV
 
 df_master = pd.read_csv("master.csv")
 df_master.drop(labels="occupied_pct", axis=1, inplace=True)

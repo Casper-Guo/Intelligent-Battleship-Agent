@@ -1,12 +1,13 @@
 # Game Play Implementation
 import pandas as pd
 
-from Battleship import *
-from Battleship_data import *
+from Battleship import Board
+from Battleship_data import collect_grid_data
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
+import random
 
 clf = pickle.load(open("rf_classifier.sav", 'rb'))
 indices = 'ABCDEFGHIJ'
@@ -165,8 +166,9 @@ def random_edge_move(Board):
 
 
 def color_map(Board, color="viridis"):
-    cmap = np.array([[Board.board[row][col].proba for col in range(10)] for row in range(10)])
-    ax = sns.heatmap(cmap, cmap=color)
+    cmap = np.array([[Board.board[row][col].proba for col in range(10)]
+                    for row in range(10)])
+    _ = sns.heatmap(cmap, cmap=color)
     plt.show()
 
     return
@@ -195,20 +197,24 @@ def get_player_placement():
     # return a valid set of placement instructions
     # (row, col, orientation)
 
-    grid_in = input("Enter the starting coordinate of your ship (the ship extends downwards or rightwards): ")
+    grid_in = input(
+        "Enter the starting coordinate of your ship (the ship extends downwards or rightwards): ")
 
     while not check_grid_input(grid_in):
         print("Please enter a valid coordinate")
-        grid_in = input("Enter the starting coordinate of your ship (the ship extends downwards or rightwards): ")
+        grid_in = input(
+            "Enter the starting coordinate of your ship (the ship extends downwards or rightwards): ")
 
     row_in = indices.find(grid_in[0].upper())
     col_in = indices.find(grid_in[1].upper())
 
-    orientation_in = input("Enter 0 for horizontal orientation, enter 1 for vertical orientation: ")
+    orientation_in = input(
+        "Enter 0 for horizontal orientation, enter 1 for vertical orientation: ")
 
     while not check_orientation_input(orientation_in):
         print("Enter either 0 or 1 for your ship orientation")
-        orientation_in = input("Enter 0 for horizontal orientation, enter 1 for vertical orientation: ")
+        orientation_in = input(
+            "Enter 0 for horizontal orientation, enter 1 for vertical orientation: ")
 
     orientation_in = int(orientation_in[0])
 
@@ -233,7 +239,8 @@ def init_player_board():
             print("The placement you have requested is illegal!")
             continue
         else:
-            player_board.place_ship(row_in, col_in, sizes[num_placed], orientation_in, names[num_placed][0])
+            player_board.place_ship(
+                row_in, col_in, sizes[num_placed], orientation_in, names[num_placed][0])
             num_placed += 1
             player_board.reveal_board()
 
@@ -282,7 +289,7 @@ def player_turn(AI_board):
 
 
 def AI_turn(miss_counter, player_board):
-    # return (row, col, rng_mode, proba) that describes the AI's move
+    """return (row, col, rng_mode, proba) that describes the AI's move."""
 
     rng_mode = ""
     row, col = find_best_grid(player_board)
@@ -291,20 +298,20 @@ def AI_turn(miss_counter, player_board):
     best_row, best_col = row, col
     proba = round(player_board.board[row][col].proba, 3)
 
-    if proba >= 0.25 or miss_counter <= 5 or miss_counter > 30 or 25 >= miss_counter > 20:
+    if proba >= 0.25 or miss_counter <= 20:
         player_board.play_move(row, col, suppressed=True)
-    elif (20 >= miss_counter > 15 and proba < 0.23) or 30 >= miss_counter > 25:
+    elif 30 >= miss_counter > 20:
         row, col = random_edge_move(player_board)
-        rng_mode = "random edge move"
-    elif 20 >= miss_counter > 5 and proba < 0.25:
+        rng_mode = "random edge exploration mode"
+    else:
         row, col = random_exploratory_move(player_board)
-        rng_mode = "random exploratory move"
+        rng_mode = "random exploratory mode"
 
     if row == 10 and col == 10:
         row, col = best_row, best_col
         rng_mode = ""
         player_board.play_move(best_row, best_col, suppressed=True)
-    
+
     return row, col, rng_mode, proba
 
 
@@ -334,8 +341,9 @@ def play_game(player_board, AI_board):
         print("\n" + "-" * 20 + "AI'S TURN" + "-" * 20 + "\n")
 
         while True:
-            
-            AI_row, AI_col, rng_mode, current_proba = AI_turn(miss_counter, player_board)
+
+            AI_row, AI_col, rng_mode, current_proba = AI_turn(
+                miss_counter, player_board)
             best_probas.append(current_proba)
 
             AI_move_counter += 1
@@ -382,11 +390,13 @@ def play_game(player_board, AI_board):
                 break
 
     if player_board.check_game_end(suppressed=False):
-        print("You are defeated by my all-too-powerful AI in {num} turns!\n".format(num=AI_move_counter))
+        print(
+            "You are defeated by my all-too-powerful AI in {num} turns!\n".format(num=AI_move_counter))
         print("This was the AI's board:")
         AI_board.reveal_board()
     elif AI_board.check_game_end(suppressed=False):
-        print("Impossible, you have defeated the AI overlord in {num} turns!".format(num=player_move_counter))
+        print("Impossible, you have defeated the AI overlord in {num} turns!".format(
+            num=player_move_counter))
 
     return
 
@@ -495,4 +505,4 @@ def selfplay_viz():
 
 
 if __name__ == "__main__":
-    selfplay_viz()
+    play_game(init_player_board(), init_AI_board())
